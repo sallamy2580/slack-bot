@@ -1,0 +1,31 @@
+commands:
+  - name: bot feedback
+    description: Send issues/suggestions etc. to the bot maintainer
+    examples:
+      - "bot feedback: I miss a command to order a pizza online!"
+    trigger: "bot feedback:? (?P<feedback>.*)"
+    commands:
+      - "reply thanks for your feedback :thumbsup:"
+      - "send message to <@U12345> We got feedback: {{.feedback}}"
+
+  # Jenkins example: "deploy feature-1234" will build clients, deploy it and prints a link after success.
+  - name: Deploy
+    trigger: "deploy (?P<branch>[\\w\\d\\-_\\.\\/]+)"
+    commands:
+      - trigger job BuildClients {{.branch}}
+      - trigger job Deploy {{.branch}}
+      - reply I deployed {{.branch}}
+      - add link "Open Admintool" https://project.example.com/admintool/
+
+  # Jira example: "open backend bugs" will print a list of all matching Jira issues
+  - name: List open Jira bugs
+    trigger: "open (?P<project>(backend|mobile|frontend)) bugs"
+    description: "Lists open Jira bugs from a given component"
+    category: QA
+    commands:
+      - "add reaction :bug:"
+      - jql issuetype = Bug AND component = "{{.project}}" AND resolution = Unresolved ORDER BY priority DESC, created DESC
+    examples:
+      - open backend bugs
+      - open mobile bugs
+      - open frontend bugs
